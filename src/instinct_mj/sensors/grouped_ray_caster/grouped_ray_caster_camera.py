@@ -588,15 +588,19 @@ class GroupedRayCasterCamera(GroupedRayCaster):
             body_pos = self._data.xpos[env_ids, self._frame_body_id]
             body_mat = self._data.xmat[env_ids, self._frame_body_id].view(-1, 3, 3)
             if self._frame_type == "site":
+                frame_pos = self._data.site_xpos[env_ids, self._frame_site_id]
                 frame_mat = self._data.site_xmat[env_ids, self._frame_site_id].view(-1, 3, 3)
             elif self._frame_type == "geom":
+                frame_pos = self._data.geom_xpos[env_ids, self._frame_geom_id]
                 frame_mat = self._data.geom_xmat[env_ids, self._frame_geom_id].view(-1, 3, 3)
             else:
                 raise RuntimeError(f"Unsupported view type: {self._frame_type}")
+            # Compute frame local offset from runtime data: local_pos = body_mat.T @ (frame_pos - body_pos)
+            self._frame_local_pos[env_ids] = torch.einsum("bji,bi->bj", body_mat, frame_pos - body_pos)
             # Match InstinctLab semantics for attached site/geom frames. The view
             # origin follows the parent body's full transform; camera offset and
             # ray_alignment are applied afterwards from that world pose.
-            pos_w = body_pos + torch.einsum("bij,j->bi", body_mat, self._frame_local_pos)
+            pos_w = body_pos + torch.einsum("bij,j->bi", body_mat, self._frame_local_pos[env_ids])
             quat_w = math_utils.quat_from_matrix(frame_mat)
         # return the pose
         return pos_w.clone(), quat_w.clone()

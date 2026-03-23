@@ -43,6 +43,16 @@ class GroupedRayCaster(RayCastSensor):
     def initialize(self, mj_model, model, data, device: str) -> None:
         super().initialize(mj_model, model, data, device)
 
+        # Extract frame info from _frame_infos (set by RayCastSensor.initialize)
+        # _frame_infos[0] = (frame_type, obj_id, body_id)
+        frame_type, obj_id, body_id = self._frame_infos[0]
+        self._frame_type = frame_type
+        self._frame_body_id = body_id
+        if frame_type == "site":
+            self._frame_site_id = obj_id
+        elif frame_type == "geom":
+            self._frame_geom_id = obj_id
+
         self._min_distance = float(self.cfg.min_distance)
         if self._min_distance < 0.0:
             raise ValueError(f"min_distance must be >= 0.0, got {self.cfg.min_distance}.")
@@ -58,6 +68,9 @@ class GroupedRayCaster(RayCastSensor):
         self._num_envs = data.nworld
         self._ALL_INDICES = torch.arange(self._num_envs, device=device, dtype=torch.long)
         self.drift = torch.zeros(self._num_envs, 3, device=device, dtype=torch.float32)
+        # _frame_local_pos will be computed at runtime from data (see prepare_rays)
+        # For initialization, we allocate full size but will be overwritten at runtime
+        self._frame_local_pos = torch.zeros(self._num_envs, 3, device=device, dtype=torch.float32)
 
         self.ray_starts = self._local_offsets.unsqueeze(0).repeat(self._num_envs, 1, 1).clone()
         self.ray_directions = self._local_directions.unsqueeze(0).repeat(self._num_envs, 1, 1).clone()
@@ -78,13 +91,16 @@ class GroupedRayCaster(RayCastSensor):
             body_pos = self._data.xpos[:, self._frame_body_id]
             body_mat = self._data.xmat[:, self._frame_body_id].view(-1, 3, 3)
             if self._frame_type == "site":
+                frame_pos = self._data.site_xpos[:, self._frame_site_id]
                 frame_mat = self._data.site_xmat[:, self._frame_site_id].view(-1, 3, 3)
             else:  # geom
+                frame_pos = self._data.geom_xpos[:, self._frame_geom_id]
                 frame_mat = self._data.geom_xmat[:, self._frame_geom_id].view(-1, 3, 3)
             # Keep InstinctLab semantics: the attached frame origin comes from the
             # parent body's full pose plus the local site/geom offset. ray_alignment
             # only affects how ray starts/directions are rotated below.
-            frame_pos = body_pos + torch.einsum("bij,j->bi", body_mat, self._frame_local_pos)
+            # Compute frame local offset from runtime data: local_pos = body_mat.T @ (frame_pos - body_pos)
+            self._frame_local_pos = torch.einsum("bji,bi->bj", body_mat, frame_pos - body_pos)
 
         # note: we clone here because we are read-only operations
         frame_pos = frame_pos.clone()
