@@ -73,7 +73,7 @@ __file_dir__ = os.path.dirname(os.path.realpath(__file__))
 # Keep `filtered_motion_selection_filepath` under this directory unless you point it elsewhere.
 # Example:
 # _PARKOUR_DATASET_DIR = os.path.expanduser("~/your/path/to/parkour_motion_reference")
-_PARKOUR_DATASET_DIR = os.path.expanduser("/home/wulv/motion/parkour_motion_reference")
+_PARKOUR_DATASET_DIR = os.path.expanduser("/Workspace/wulv/motion/parkour_motion_reference")
 
 
 # ---------------------------------------------------------------------------
@@ -187,7 +187,8 @@ def instinct_g1_parkour_amp_env_cfg(
     cfg.sim.mujoco.ls_iterations = 20
     cfg.sim.mujoco.ccd_iterations = 128
     # Keep multiccd disabled under mjlab's flag-based MuJoCo API.
-    cfg.sim.mujoco.enableflags = tuple(flag for flag in cfg.sim.mujoco.enableflags if flag != "multiccd")
+    if hasattr(cfg.sim.mujoco, "enableflags"):
+        cfg.sim.mujoco.enableflags = tuple(flag for flag in cfg.sim.mujoco.enableflags if flag != "multiccd")
     robot_cfg = cfg.scene.entities["robot"]
     robot_cfg.articulation.actuators = copy.deepcopy(beyondmimic_g1_29dof_delayed_actuator_cfgs)
     joint_pos_action: JointPositionActionCfg = cfg.actions["joint_pos"]
