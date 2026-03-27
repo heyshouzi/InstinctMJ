@@ -119,7 +119,10 @@ motion_reference_cfg = MotionReferenceManagerCfg(
         "left_foot_link",
         "right_foot_link",
     ],
-    symmetric_augmentation_link_mapping=[0, 1, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12],
+    # 17 links: Trunk(0), H1(1), H2(2) -> self; AL1(3)<->AR1(7), AL2(4)<->AR2(8), AL3(5)<->AR3(9),
+    # left_hand_link(6)<->right_hand_link(10), Hip_Pitch_Left(11)<->Hip_Pitch_Right(12),
+    # Shank_Left(13)<->Shank_Right(14), left_foot_link(15)<->right_foot_link(16)
+    symmetric_augmentation_link_mapping=[0, 1, 2, 7, 8, 9, 10, 3, 4, 5, 6, 12, 11, 14, 13, 16, 15],
     symmetric_augmentation_joint_mapping=list(T1_symmetric_augmentation_joint_mapping),
     symmetric_augmentation_joint_reverse_buf=list(T1_symmetric_augmentation_joint_reverse_buf),
     frame_interval_s=0.02,
@@ -199,6 +202,14 @@ def instinct_t1_parkour_amp_env_cfg(
             terrain=terrain_cfg,
             entities={"robot": robot_cfg},
         ),
+        actions={
+            "joint_pos": JointPositionActionCfg(
+                entity_name="robot",
+                actuator_names=(".*",),
+                scale=0.5,
+                use_default_offset=True,
+            ),
+        },
         decimation=4,
         episode_length_s=20.0,
         sim=SimulationCfg(

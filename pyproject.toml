@@ -52,6 +52,10 @@ required-environments = [
 ]
 
 [[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple"
+alias = "aliyun"
+
+[[tool.uv.index]]
 url = "https://pypi.org/simple"
 
 [tool.uv.sources]
