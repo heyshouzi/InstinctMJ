@@ -10,7 +10,7 @@ from mjlab.actuator import ActuatorCfg
 from mjlab.entity import EntityArticulationInfoCfg, EntityCfg
 from mjlab.utils.os import update_assets
 
-from instinct_mj.actuators import DelayedInstinctActuatorCfg, InstinctActuatorCfg, DelayedXmlPositionActuatorCfg, XmlPositionActuatorCfgInstinct
+from instinct_mj.actuators import DelayedInstinctActuatorCfg, InstinctActuatorCfg
 
 __file_dir__ = os.path.dirname(os.path.realpath(__file__))
 
@@ -135,8 +135,8 @@ DAMPING_DMNA4310 = 0.15
 # ============================================================================
 
 # Hip-Pitch: Encos8112
-T1_DELAYED_HIP_PITCH = DelayedXmlPositionActuatorCfg(
-    base_cfg=XmlPositionActuatorCfgInstinct(
+T1_DELAYED_HIP_PITCH = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
         target_names_expr=(".*_Hip_Pitch",),
         velocity_limit=VELOCITY_LIMIT_8112,
         stiffness=STIFFNESS_8112,
@@ -150,8 +150,8 @@ T1_DELAYED_HIP_PITCH = DelayedXmlPositionActuatorCfg(
 )
 
 # Knee: Encos8116
-T1_DELAYED_KNEE = DelayedXmlPositionActuatorCfg(
-    base_cfg=XmlPositionActuatorCfgInstinct(
+T1_DELAYED_KNEE = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
         target_names_expr=(".*_Knee_Pitch",),
         velocity_limit=VELOCITY_LIMIT_8116,
         stiffness=STIFFNESS_8116,
@@ -165,8 +165,8 @@ T1_DELAYED_KNEE = DelayedXmlPositionActuatorCfg(
 )
 
 # Waist and Hip-Roll/Hip-Yaw: Encos6408-40T
-T1_DELAYED_WAIST_HIP = DelayedXmlPositionActuatorCfg(
-    base_cfg=XmlPositionActuatorCfgInstinct(
+T1_DELAYED_WAIST_HIP = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
         target_names_expr=("Waist", ".*_Hip_Roll", ".*_Hip_Yaw"),
         velocity_limit=VELOCITY_LIMIT_6408,
         stiffness=STIFFNESS_6408,
@@ -180,8 +180,8 @@ T1_DELAYED_WAIST_HIP = DelayedXmlPositionActuatorCfg(
 )
 
 # Ankle: Encos4315
-T1_DELAYED_ANKLE = DelayedXmlPositionActuatorCfg(
-    base_cfg=XmlPositionActuatorCfgInstinct(
+T1_DELAYED_ANKLE = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
         target_names_expr=(".*_Ankle_Pitch", ".*_Ankle_Roll"),
         velocity_limit=VELOCITY_LIMIT_4315,
         stiffness=STIFFNESS_4315,
@@ -195,8 +195,8 @@ T1_DELAYED_ANKLE = DelayedXmlPositionActuatorCfg(
 )
 
 # Arm: Encos4310
-T1_DELAYED_ARM = DelayedXmlPositionActuatorCfg(
-    base_cfg=XmlPositionActuatorCfgInstinct(
+T1_DELAYED_ARM = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
         target_names_expr=(
             ".*_Shoulder_Pitch",
             ".*_Shoulder_Roll",
@@ -215,8 +215,8 @@ T1_DELAYED_ARM = DelayedXmlPositionActuatorCfg(
 )
 
 # Neck: DMNA4310 (Gear 10:1, Rated 3Nm, Peak 7Nm)
-T1_DELAYED_NECK = DelayedXmlPositionActuatorCfg(
-    base_cfg=XmlPositionActuatorCfgInstinct(
+T1_DELAYED_NECK = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
         target_names_expr=("AAHead_yaw", "Head_pitch"),
         velocity_limit=VELOCITY_LIMIT_DMNA4310,
         stiffness=STIFFNESS_DMNA4310,

@@ -183,37 +183,6 @@
       </body>
     </body>
   </worldbody>
-  <actuator>
-    <!-- Head: DMNA4310 -->
-    <position name="AAHead_yaw" joint="AAHead_yaw" forcerange="-7.0 7.0"/>
-    <position name="Head_pitch" joint="Head_pitch" forcerange="-7.0 7.0"/>
-    <!-- Arm: Encos4310 -->
-    <position name="Left_Shoulder_Pitch" joint="Left_Shoulder_Pitch" forcerange="-18.0 18.0"/>
-    <position name="Left_Shoulder_Roll" joint="Left_Shoulder_Roll" forcerange="-18.0 18.0"/>
-    <position name="Left_Elbow_Pitch" joint="Left_Elbow_Pitch" forcerange="-18.0 18.0"/>
-    <position name="Left_Elbow_Yaw" joint="Left_Elbow_Yaw" forcerange="-18.0 18.0"/>
-    <position name="Right_Shoulder_Pitch" joint="Right_Shoulder_Pitch" forcerange="-18.0 18.0"/>
-    <position name="Right_Shoulder_Roll" joint="Right_Shoulder_Roll" forcerange="-18.0 18.0"/>
-    <position name="Right_Elbow_Pitch" joint="Right_Elbow_Pitch" forcerange="-18.0 18.0"/>
-    <position name="Right_Elbow_Yaw" joint="Right_Elbow_Yaw" forcerange="-18.0 18.0"/>
-    <!-- Waist, Hip-Roll, Hip-Yaw: Encos6408-40T -->
-    <position name="Waist" joint="Waist" forcerange="-25.0 25.0"/>
-    <position name="Left_Hip_Roll" joint="Left_Hip_Roll" forcerange="-25.0 25.0"/>
-    <position name="Left_Hip_Yaw" joint="Left_Hip_Yaw" forcerange="-25.0 25.0"/>
-    <position name="Right_Hip_Roll" joint="Right_Hip_Roll" forcerange="-25.0 25.0"/>
-    <position name="Right_Hip_Yaw" joint="Right_Hip_Yaw" forcerange="-25.0 25.0"/>
-    <!-- Hip-Pitch: Encos8112 -->
-    <position name="Left_Hip_Pitch" joint="Left_Hip_Pitch" forcerange="-45.0 45.0"/>
-    <position name="Right_Hip_Pitch" joint="Right_Hip_Pitch" forcerange="-45.0 45.0"/>
-    <!-- Knee: Encos8116 -->
-    <position name="Left_Knee_Pitch" joint="Left_Knee_Pitch" forcerange="-60.0 60.0"/>
-    <position name="Right_Knee_Pitch" joint="Right_Knee_Pitch" forcerange="-60.0 60.0"/>
-    <!-- Ankle: Encos4315 -->
-    <position name="Left_Ankle_Pitch" joint="Left_Ankle_Pitch" forcerange="-24.0 24.0"/>
-    <position name="Left_Ankle_Roll" joint="Left_Ankle_Roll" forcerange="-15.0 15.0"/>
-    <position name="Right_Ankle_Pitch" joint="Right_Ankle_Pitch" forcerange="-24.0 24.0"/>
-    <position name="Right_Ankle_Roll" joint="Right_Ankle_Roll" forcerange="-15.0 15.0"/>
-  </actuator>
   <sensor>
     <framequat name="orientation" objtype="site" noise="0.001" objname="imu" />
     <gyro name="angular-velocity" site="imu" noise="0.005" />
