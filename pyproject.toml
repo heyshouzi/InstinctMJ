@@ -22,7 +22,7 @@ dependencies = [
   "pytorch-kinematics",
   "scikit-learn",
   "numpy-quaternion",
-  "onnxruntime",
+  "onnxruntime>=1.16.0,<1.19.0",
   "pandas",
   "coacd",
   "mjlab",
@@ -59,7 +59,7 @@ alias = "aliyun"
 url = "https://pypi.org/simple"
 
 [tool.uv.sources]
-mjlab = { git = "https://github.com/mujocolab/mjlab.git" }
+mjlab = { path = "/home/wulv/mjlab" }
 instinct_rl = { git = "https://github.com/project-instinct/instinct_rl.git" }
 
 [tool.setuptools]

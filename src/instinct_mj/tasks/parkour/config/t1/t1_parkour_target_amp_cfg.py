@@ -217,6 +217,7 @@ def instinct_t1_parkour_amp_env_cfg(
             nconmax=128,
             njmax=700,
             mujoco=MujocoCfg(
+                timestep=0.005,
                 iterations=10,
                 ls_iterations=20,
                 ccd_iterations=128,
