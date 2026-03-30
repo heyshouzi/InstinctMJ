@@ -3,8 +3,7 @@
 
   <asset>
     <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
-    <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
-    <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+    <!-- Ground plane texture removed - terrain provides the ground in parkour scenes -->
 
     <mesh name="Trunk" file="Trunk.STL"/>
     <mesh name="H1" file="H1.STL"/>
@@ -36,7 +35,7 @@
   <worldbody>
     <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false" />
     <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1" />
-    <geom name="ground" type="plane" pos="0 0 0" size="0 0 1" material="matplane" condim="1"/>
+    <!-- Ground plane removed - terrain provides the ground in parkour scenes -->
 
     <body name="Trunk" pos="0 0 0.7">
       <inertial pos="0.055138 -1.42184e-06 0.105043" quat="0.999959 1.39867e-05 -0.00902028 -1.39205e-05" mass="11.7016" diaginertia="0.0915734 0.0768118 0.0556067"/>

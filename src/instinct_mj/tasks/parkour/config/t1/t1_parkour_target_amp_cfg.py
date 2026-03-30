@@ -213,6 +213,7 @@ def instinct_t1_parkour_amp_env_cfg(
         decimation=4,
         episode_length_s=20.0,
         sim=SimulationCfg(
+            # dt=0.005,
             nconmax=128,
             njmax=700,
             mujoco=MujocoCfg(
