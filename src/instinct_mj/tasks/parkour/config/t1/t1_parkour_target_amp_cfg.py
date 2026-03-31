@@ -322,9 +322,9 @@ def instinct_t1_parkour_amp_env_cfg(
             vertical_aperture=2 * 0.509,
             ray_alignment="yaw",
             offset=NoisyGroupedRayCasterCameraCfg.OffsetCfg(
-                # T1 Robot head camera nominal pose (approximate based on H2 body)
+                # T1 Robot head camera nominal pose (matching G1 tilt angle ~48deg down)
                 pos=(0.0, 0.0, 0.1),
-                rot=(1.0, 0.0, 0.0, 0.0),
+                rot=(0.9135367613482678, 0.004363309284746571, 0.4067366430758002, 0.0),
                 convention="world",
             ),
             data_types=["distance_to_image_plane"],
