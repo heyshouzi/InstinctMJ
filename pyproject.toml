@@ -41,6 +41,7 @@ instinct-amass-visualize = "instinct_mj.scripts.amass_visualize:main"
 instinct-gmr-to-instinct = "instinct_mj.scripts.GMR_to_instinct:main"
 instinct-motion-metadata = "instinct_mj.scripts.motion_matched_metadata_generator:entry_point"
 instinct-phalp-to-amass = "instinct_mj.scripts.phalp_to_amass:entry_point"
+instinct-teleop = "instinct_mj.scripts.sim_teleop:main"
 
 [project.entry-points."mjlab.tasks"]
 instinct_mj = "instinct_mj.tasks"

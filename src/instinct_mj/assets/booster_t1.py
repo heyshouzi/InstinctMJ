@@ -39,7 +39,6 @@ def get_t1_spec() -> mujoco.MjSpec:
 
 # Initial state for T1 robot.
 # NOTE: pos is the root (Trunk) world position.
-# Matching IsaacLab T1_CFG init_state
 _T1_INIT_STATE = EntityCfg.InitialStateCfg(
     pos=(0.0, 0.0, 0.70),
     joint_pos={
@@ -60,116 +59,168 @@ _T1_INIT_STATE = EntityCfg.InitialStateCfg(
 
 
 # ============================================================================
-# T1 Actuator Configurations - Matching IsaacLab T1_CFG
+# Booster T1 Motor Specifications
+# ============================================================================
+# Motor assignments based on Booster T1 hardware:
+# - Arm: Encos4310 (Gear 36:1, Rated 10Nm, Peak 30Nm, Rated 147rpm)
+# - Ankle: Encos4315 (Gear 36:1, Rated 19Nm, Peak 57Nm, Rated 104rpm)
+# - Waist, Hip-Roll & Hip-Yaw: Encos6408-40T non-standard (Gear 25:1, Rated 13Nm, Peak 40Nm)
+# - Hip-Pitch: Encos8112 (Gear 18:1, Rated 30Nm, Peak 90Nm, Rated 140rpm)
+# - Knee: Encos8116 (Gear 18:1, Rated 39Nm, Peak 118Nm, Rated 120rpm)
+# - Neck: DMNA4310 (Gear 10:1, Rated 3Nm, Peak 7Nm, Rated 120rpm)
 # ============================================================================
 
-# Arm: Encos4310 (Gear 36:1, Rated 10Nm, Peak 30Nm, Rated 147rpm)
+# Motor output limits based on IsaacLab T1_CFG
+# Effort limits (matching IsaacLab T1_CFG values)
+ACTUATOR_4310_EFFORT_LIMIT = 38.3  # Arm
+ACTUATOR_4315_EFFORT_LIMIT = 76.0  # Ankle
+ACTUATOR_6408_EFFORT_LIMIT = 68.0  # Waist, Hip_Roll, Hip_Yaw
+ACTUATOR_8112_EFFORT_LIMIT = 96.0  # Hip_Pitch
+ACTUATOR_8116_EFFORT_LIMIT = 125.0  # Knee_Pitch
+ACTUATOR_DMNA4310_EFFORT_LIMIT = 38.3  # Head (uses arm actuator)
+
+# Velocity limits (rad/s at MOTOR SHAFT - matching booster.py convention)
+# These are motor-side velocities before gear reduction
+# Calculated from rated rpm: rated_rpm / 60 * 2pi
+VELOCITY_LIMIT_4310 = 147 / 60 * 2 * 3.14159  # ~15.4 rad/s
+VELOCITY_LIMIT_4315 = 104 / 60 * 2 * 3.14159  # ~10.9 rad/s
+VELOCITY_LIMIT_6408 = 57 / 60 * 2 * 3.14159  # ~6.0 rad/s
+VELOCITY_LIMIT_8112 = 140 / 60 * 2 * 3.14159  # ~14.66 rad/s
+VELOCITY_LIMIT_8116 = 120 / 60 * 2 * 3.14159  # ~12.57 rad/s
+VELOCITY_LIMIT_DMNA4310 = 120 / 60 * 2 * 3.14159  # ~12.57 rad/s
+
+# Armature values (from booster.py)
+ARMATURE_4310 = 0.0282528
+ARMATURE_4315 = 0.0339552
+ARMATURE_6408 = 0.0478125
+ARMATURE_8112 = 0.0523908
+ARMATURE_8116 = 0.0636012
+ARMATURE_DMNA4310 = 0.001
+
+# Natural frequency and damping ratio for PD control
+NATURAL_FREQ = 10 * 2.0 * 3.1415926535  # 10Hz
+DAMPING_RATIO = 2.0
+
+# Compute stiffness (k_p) and damping (k_d) from motor parameters
+# k_p = k_t^2 / R_eff (motor-side), reflected through gear ratio
+# Using rated torque and speed to estimate motor constants
+# k_t = rated_torque / (rated_rpm / 60 * 2*pi)
+# k_p_stiffness = k_t^2 / R * (1/gear_ratio)^2
+# damping = 2 * damping_ratio * sqrt(k_p_stiffness * I_eff)
+
+# Simplified approach: scale stiffness proportional to peak torque
+# and normalize to a 90Nm reference (similar to G1 8112 motor)
+
+# Stiffness values from IsaacLab T1_CFG
+STIFFNESS_8116 = 40.17  # Knee
+STIFFNESS_8112 = 51.71  # Hip-Pitch
+STIFFNESS_4315 = 67.02  # Ankle_Pitch (pitch dominant)
+STIFFNESS_6408 = 47.19  # Waist/Hip-Roll/Hip-Yaw
+STIFFNESS_4310 = 27.88  # Arm
+STIFFNESS_DMNA4310 = 27.88  # Head (uses arm actuator)
+
+# Damping values from IsaacLab T1_CFG
+DAMPING_8116 = 4.80
+DAMPING_8112 = 4.94
+DAMPING_4315 = 8.53
+DAMPING_6408 = 4.51
+DAMPING_4310 = 2.66
+DAMPING_DMNA4310 = 2.66  # Head (uses arm actuator)
+
+
+# ============================================================================
+# T1 Actuator Configurations
+# ============================================================================
+
+# Hip-Pitch: Encos8112
+T1_DELAYED_HIP_PITCH = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
+        target_names_expr=(".*_Hip_Pitch",),
+        velocity_limit=VELOCITY_LIMIT_8112,
+        stiffness=STIFFNESS_8112,
+        damping=DAMPING_8112,
+        effort_limit=ACTUATOR_8112_EFFORT_LIMIT,
+        armature=ARMATURE_8112,
+    ),
+    delay_target="position",
+    delay_min_lag=1,
+    delay_max_lag=3,
+)
+
+# Knee: Encos8116
+T1_DELAYED_KNEE = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
+        target_names_expr=(".*_Knee_Pitch",),
+        velocity_limit=VELOCITY_LIMIT_8116,
+        stiffness=STIFFNESS_8116,
+        damping=DAMPING_8116,
+        effort_limit=ACTUATOR_8116_EFFORT_LIMIT,
+        armature=ARMATURE_8116,
+    ),
+    delay_target="position",
+    delay_min_lag=1,
+    delay_max_lag=3,
+)
+
+# Waist and Hip-Roll/Hip-Yaw: Encos6408-40T
+T1_DELAYED_WAIST_HIP = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
+        target_names_expr=("Waist", ".*_Hip_Roll", ".*_Hip_Yaw"),
+        velocity_limit=VELOCITY_LIMIT_6408,
+        stiffness=STIFFNESS_6408,
+        damping=DAMPING_6408,
+        effort_limit=ACTUATOR_6408_EFFORT_LIMIT,
+        armature=ARMATURE_6408,
+    ),
+    delay_target="position",
+    delay_min_lag=1,
+    delay_max_lag=3,
+)
+
+# Ankle: Encos4315
+T1_DELAYED_ANKLE = DelayedInstinctActuatorCfg(
+    base_cfg=InstinctActuatorCfg(
+        target_names_expr=(".*_Ankle_Pitch", ".*_Ankle_Roll"),
+        velocity_limit=VELOCITY_LIMIT_4315,
+        stiffness=STIFFNESS_4315,
+        damping=DAMPING_4315,
+        effort_limit=ACTUATOR_4315_EFFORT_LIMIT,
+        armature=ARMATURE_4315,
+    ),
+    delay_target="position",
+    delay_min_lag=1,
+    delay_max_lag=3,
+)
+
+# Arm: Encos4310
 T1_DELAYED_ARM = DelayedInstinctActuatorCfg(
     base_cfg=InstinctActuatorCfg(
-        target_names_expr=[
+        target_names_expr=(
             ".*_Shoulder_Pitch",
             ".*_Shoulder_Roll",
             ".*_Elbow_Pitch",
             ".*_Elbow_Yaw",
-        ],
-        velocity_limit=17.59291886010284,
-        stiffness=27.884395922309743,
-        damping=2.6627636677002515,
-        effort_limit=38.3,
-        armature=0.0282528,
+        ),
+        velocity_limit=VELOCITY_LIMIT_4310,
+        stiffness=STIFFNESS_4310,
+        damping=DAMPING_4310,
+        effort_limit=ACTUATOR_4310_EFFORT_LIMIT,
+        armature=ARMATURE_4310,
     ),
     delay_target="position",
     delay_min_lag=1,
     delay_max_lag=3,
 )
 
-# Waist: Encos6408-40T (Gear 25:1, Rated 13Nm, Peak 40Nm)
-T1_DELAYED_WAIST = DelayedInstinctActuatorCfg(
+# Neck: DMNA4310 (Gear 10:1, Rated 3Nm, Peak 7Nm)
+T1_DELAYED_NECK = DelayedInstinctActuatorCfg(
     base_cfg=InstinctActuatorCfg(
-        target_names_expr=["Waist"],
-        velocity_limit=14.660765716752367,
-        stiffness=47.1890460427085,
-        damping=4.50622196249286,
-        effort_limit=68.0,
-        armature=0.0478125,
-    ),
-    delay_target="position",
-    delay_min_lag=1,
-    delay_max_lag=3,
-)
-
-# Legs: Hip-Pitch, Hip-Roll, Hip-Yaw, Knee-Pitch
-T1_DELAYED_LEGS = DelayedInstinctActuatorCfg(
-    base_cfg=InstinctActuatorCfg(
-        target_names_expr=[
-            ".*_Hip_Pitch",
-            ".*_Hip_Roll",
-            ".*_Hip_Yaw",
-            ".*_Knee_Pitch",
-        ],
-        velocity_limit={
-            ".*_Hip_Pitch": 16.755160819145562,
-            ".*_Hip_Roll": 14.660765716752367,
-            ".*_Hip_Yaw": 14.660765716752367,
-            ".*_Knee_Pitch": 14.660765716752367,
-        },
-        stiffness={
-            ".*_Hip_Pitch": 51.707647025659234,
-            ".*_Hip_Roll": 47.1890460427085,
-            ".*_Hip_Yaw": 47.1890460427085,
-            ".*_Knee_Pitch": 40.17399573981213,
-        },
-        damping={
-            ".*_Hip_Pitch": 4.937716571870764,
-            ".*_Hip_Roll": 4.50622196249286,
-            ".*_Hip_Yaw": 4.50622196249286,
-            ".*_Knee_Pitch": 4.795417504307883,
-        },
-        effort_limit={
-            ".*_Hip_Pitch": 96.0,
-            ".*_Hip_Roll": 68.0,
-            ".*_Hip_Yaw": 68.0,
-            ".*_Knee_Pitch": 125.0,
-        },
-        armature={
-            ".*_Hip_Pitch": 0.0523908,
-            ".*_Hip_Roll": 0.0478125,
-            ".*_Hip_Yaw": 0.0478125,
-            ".*_Knee_Pitch": 0.0636012,
-        },
-    ),
-    delay_target="position",
-    delay_min_lag=1,
-    delay_max_lag=3,
-)
-
-# Feet: Ankle-Pitch, Ankle-Roll
-T1_DELAYED_FEET = DelayedInstinctActuatorCfg(
-    base_cfg=InstinctActuatorCfg(
-        target_names_expr=[
-            ".*_Ankle_Pitch",
-            ".*_Ankle_Roll",
-        ],
-        velocity_limit={
-            ".*_Ankle_Pitch": 12.56637061435917,
-            ".*_Ankle_Roll": 12.56637061435917,
-        },
-        stiffness={
-            ".*_Ankle_Pitch": 67.02487827197386,
-            ".*_Ankle_Roll": 15.080597611194122,
-        },
-        damping={
-            ".*_Ankle_Pitch": 8.53387254969377,
-            ".*_Ankle_Roll": 1.4400909927608239,
-        },
-        effort_limit={
-            ".*_Ankle_Pitch": 76.0,
-            ".*_Ankle_Roll": 76.0,
-        },
-        armature={
-            ".*_Ankle_Pitch": 0.0679104,
-            ".*_Ankle_Roll": 0.01527984,
-        },
+        target_names_expr=("AAHead_yaw", "Head_pitch"),
+        velocity_limit=VELOCITY_LIMIT_DMNA4310,
+        stiffness=STIFFNESS_DMNA4310,
+        damping=DAMPING_DMNA4310,
+        effort_limit=ACTUATOR_DMNA4310_EFFORT_LIMIT,
+        armature=ARMATURE_DMNA4310,
     ),
     delay_target="position",
     delay_min_lag=1,
@@ -177,10 +228,12 @@ T1_DELAYED_FEET = DelayedInstinctActuatorCfg(
 )
 
 t1_delayed_actuator_cfgs: tuple[ActuatorCfg, ...] = (
+    T1_DELAYED_HIP_PITCH,
+    T1_DELAYED_KNEE,
+    T1_DELAYED_WAIST_HIP,
+    T1_DELAYED_ANKLE,
     T1_DELAYED_ARM,
-    T1_DELAYED_WAIST,
-    T1_DELAYED_LEGS,
-    T1_DELAYED_FEET,
+    T1_DELAYED_NECK,
 )
 
 
@@ -191,16 +244,8 @@ for actuator_cfg in t1_delayed_actuator_cfgs:
     stiffness = actuator_cfg.base_cfg.stiffness
     if effort is None or stiffness == 0.0:
         continue
-    if isinstance(effort, dict):
-        for joint_expr in actuator_cfg.base_cfg.target_names_expr:
-            # Get the effort for this joint expression pattern
-            for pattern, val in effort.items():
-                if any(joint_expr in p or p in joint_expr for p in [pattern]):
-                    T1_ACTION_SCALE[joint_expr] = 0.25 * val / (stiffness.get(pattern, stiffness) if isinstance(stiffness, dict) else stiffness)
-                    break
-    else:
-        for joint_expr in actuator_cfg.base_cfg.target_names_expr:
-            T1_ACTION_SCALE[joint_expr] = 0.25 * effort / stiffness
+    for joint_expr in actuator_cfg.base_cfg.target_names_expr:
+        T1_ACTION_SCALE[joint_expr] = 0.25 * effort / stiffness
 
 
 T1_23DOF_CFG = EntityCfg(
@@ -282,4 +327,17 @@ __all__ = [
     "get_t1_assets",
     "get_t1_spec",
     "t1_delayed_actuator_cfgs",
+    # Motor constants
+    "ACTUATOR_4310_EFFORT_LIMIT",
+    "ACTUATOR_4315_EFFORT_LIMIT",
+    "ACTUATOR_6408_EFFORT_LIMIT",
+    "ACTUATOR_8112_EFFORT_LIMIT",
+    "ACTUATOR_8116_EFFORT_LIMIT",
+    "ACTUATOR_DMNA4310_EFFORT_LIMIT",
+    "STIFFNESS_8116",
+    "STIFFNESS_8112",
+    "STIFFNESS_4315",
+    "STIFFNESS_6408",
+    "STIFFNESS_4310",
+    "STIFFNESS_DMNA4310",
 ]
