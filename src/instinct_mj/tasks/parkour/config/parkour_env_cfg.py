@@ -55,7 +55,7 @@ ROUGH_TERRAINS_CFG = FiledTerrainGeneratorCfg(
             },
         ),
         "perlin_rough_stand": PerlinPlaneTerrainCfg(
-            proportion=0.05,
+            proportion=0.10,
             noise_scale=[0.0, 0.1],
             noise_frequency=20,
             fractal_octaves=2,
@@ -225,7 +225,7 @@ ROUGH_TERRAINS_CFG = FiledTerrainGeneratorCfg(
             },
         ),
         "dense_boxes": PerlinDiscreteObstaclesTerrainCfg(
-            proportion=0.10,
+            proportion=0.05,
             num_obstacles=120,
             obstacle_height_mode="fixed",
             obstacle_width_range=(0.30, 0.50),
@@ -275,6 +275,11 @@ ROUGH_TERRAINS_CFG = FiledTerrainGeneratorCfg(
 ROUGH_TERRAINS_CFG_PLAY = copy.deepcopy(ROUGH_TERRAINS_CFG)
 ROUGH_TERRAINS_CFG_PLAY.num_rows = 4
 ROUGH_TERRAINS_CFG_PLAY.num_cols = 10
+
+# Remove walls in play mode for open-field visualization
+for sub_terrain_cfg in ROUGH_TERRAINS_CFG_PLAY.sub_terrains.values():
+    if hasattr(sub_terrain_cfg, "wall_prob"):
+        sub_terrain_cfg.wall_prob = [0.0, 0.0, 0.0, 0.0]
 
 
 # ---------------------------------------------------------------------------
