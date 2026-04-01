@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from mjlab.actuator import BuiltinPositionActuatorCfg, DelayedActuatorCfg
+
+if TYPE_CHECKING:
+    from mjlab.entity import Entity
 
 
 @dataclass(kw_only=True)
@@ -23,3 +26,4 @@ class DelayedInstinctActuatorCfg(DelayedActuatorCfg):
     @property
     def velocity_limit(self) -> float:
         return self.base_cfg.velocity_limit
+

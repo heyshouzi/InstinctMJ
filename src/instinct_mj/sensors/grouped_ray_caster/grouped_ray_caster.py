@@ -44,8 +44,25 @@ class GroupedRayCaster(RayCastSensor):
     def initialize(self, mj_model, model, data, device: str) -> None:
         super().initialize(mj_model, model, data, device)
 
-        # Frame info (_frame_type, _frame_body_id, _frame_site_id, _frame_geom_id)
-        # is now set directly by RayCastSensor.initialize in mjlab.
+        # Extract individual frame attributes from _frame_infos.
+        if len(self._frame_infos) > 0:
+            frame_type, obj_id, body_id = self._frame_infos[0]
+            self._frame_type = frame_type
+            self._frame_body_id = body_id
+            if frame_type == "site":
+                self._frame_site_id = obj_id
+                self._frame_geom_id = -1
+            elif frame_type == "geom":
+                self._frame_site_id = -1
+                self._frame_geom_id = obj_id
+            else:  # body
+                self._frame_site_id = -1
+                self._frame_geom_id = -1
+        else:
+            self._frame_type = "body"
+            self._frame_body_id = -1
+            self._frame_site_id = -1
+            self._frame_geom_id = -1
 
         self._min_distance = float(self.cfg.min_distance)
         if self._min_distance < 0.0:

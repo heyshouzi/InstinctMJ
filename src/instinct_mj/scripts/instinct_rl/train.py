@@ -84,6 +84,10 @@ class TrainCliConfig:
     viewer_fps: float = 60.0
     gpu_ids: list[int] | Literal["all"] | None = None
     torchrunx_log_dir: str | None = None
+    # -- load arguments
+    resume: bool = False
+    load_run: str | None = None
+    checkpoint: str | None = None
 
 
 def _parse_cli_literal(raw: str) -> Any:
@@ -527,6 +531,13 @@ def main() -> None:
         gpu_ids=cli_cfg.gpu_ids,
         torchrunx_log_dir=cli_cfg.torchrunx_log_dir,
     )
+    # Apply instinct_rl CLI args to agent config
+    if cli_cfg.resume:
+        args.agent.resume = cli_cfg.resume
+    if cli_cfg.load_run is not None:
+        args.agent.load_run = cli_cfg.load_run
+    if cli_cfg.checkpoint is not None:
+        args.agent.load_checkpoint = cli_cfg.checkpoint
     _apply_dot_overrides(args, dot_override_args)
     launch_training(task_id=chosen_task, args=args)
 

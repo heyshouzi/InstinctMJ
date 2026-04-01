@@ -22,7 +22,7 @@ dependencies = [
   "pytorch-kinematics",
   "scikit-learn",
   "numpy-quaternion",
-  "onnxruntime",
+  "onnxruntime>=1.16.0,<1.19.0",
   "pandas",
   "coacd",
   "mjlab",
@@ -41,6 +41,7 @@ instinct-amass-visualize = "instinct_mj.scripts.amass_visualize:main"
 instinct-gmr-to-instinct = "instinct_mj.scripts.GMR_to_instinct:main"
 instinct-motion-metadata = "instinct_mj.scripts.motion_matched_metadata_generator:entry_point"
 instinct-phalp-to-amass = "instinct_mj.scripts.phalp_to_amass:entry_point"
+instinct-teleop = "instinct_mj.scripts.sim_teleop:main"
 
 [project.entry-points."mjlab.tasks"]
 instinct_mj = "instinct_mj.tasks"
@@ -50,6 +51,10 @@ required-environments = [
   "sys_platform == 'darwin' and platform_machine == 'arm64'",
   "sys_platform == 'linux' and platform_machine == 'x86_64'",
 ]
+
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple"
+alias = "aliyun"
 
 [[tool.uv.index]]
 url = "https://pypi.org/simple"
