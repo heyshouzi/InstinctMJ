@@ -636,12 +636,12 @@ def instinct_t1_parkour_amp_env_cfg(
         # ---------- Task rewards ----------
         "track_lin_vel_xy_exp": RewardTermCfg(
             func=parkour_mdp.track_lin_vel_xy_exp,
-            weight=2.0,
+            weight=3.0,
             params={"command_name": "base_velocity", "std": 0.5},
         ),
         "track_ang_vel_z_exp": RewardTermCfg(
             func=parkour_mdp.track_ang_vel_z_exp,
-            weight=2.0,
+            weight=1.5,
             params={"command_name": "base_velocity", "std": 0.5},
         ),
         "heading_error": RewardTermCfg(
@@ -651,10 +651,10 @@ def instinct_t1_parkour_amp_env_cfg(
         ),
         "dont_wait": RewardTermCfg(
             func=parkour_mdp.dont_wait,
-            weight=-0.5,
+            weight=-1.5,
             params={"command_name": "base_velocity"},
         ),
-        "is_alive": RewardTermCfg(func=envs_mdp.is_alive, weight=3.0),
+        "is_alive": RewardTermCfg(func=envs_mdp.is_alive, weight=2.0),
         "stand_still": RewardTermCfg(
             func=parkour_mdp.stand_still,
             weight=-0.3,

@@ -253,7 +253,7 @@ T1_23DOF_CFG = EntityCfg(
     spec_fn=get_t1_spec,
     articulation=EntityArticulationInfoCfg(
         actuators=tuple(copy.deepcopy(act) for act in t1_delayed_actuator_cfgs),
-        soft_joint_pos_limit_factor=0.9,
+        soft_joint_pos_limit_factor=0.95,
     ),
 )
 
