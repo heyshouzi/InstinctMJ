@@ -540,6 +540,13 @@ class AmassMotion(MotionBuffer):
             return self._read_amass_motion_file(filepath)
         elif filepath.endswith("retargetted.npz") or filepath.endswith("retargeted.npz"):
             return self._read_retargetted_motion_file(filepath)
+        elif filepath.endswith(".npz"):
+            # Detect format by content for generic npz files
+            with np.load(filepath, mmap_mode="r") as f:
+                if "joint_pos" in f or "joint_names" in f:
+                    return self._read_retargetted_motion_file(filepath)
+                else:
+                    return self._read_amass_motion_file(filepath)
         else:
             raise ValueError(f"Unsupported file type: {filepath}")
 

@@ -21,7 +21,7 @@ class AmassMotionCfg(MotionBufferCfg):
     """ the path to the motion dataset """
 
     supported_file_endings: Sequence[str] = field(
-        default_factory=lambda: ["poses.npz", "stageii.npz", "retargetted.npz", "retargeted.npz"]
+        default_factory=lambda: ["poses.npz", "stageii.npz", "retargetted.npz", "retargeted.npz", ".npz"]
     )
     """ At initialization stage, AmassMotion will walk through `cfg.path` and collect all files ending with
     `supported_file_endings`
