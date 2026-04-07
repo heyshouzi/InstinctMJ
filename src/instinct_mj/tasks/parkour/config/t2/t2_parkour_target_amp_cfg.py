@@ -406,7 +406,7 @@ def instinct_t2_parkour_amp_env_cfg(
             name="contact_forces",
             primary=ContactMatch(
                 mode="body",
-                pattern=("FootLeft_Link", "FootRight_Link"),
+                pattern=("AnkleCrossLeft_Link", "AnkleCrossRight_Link"),
                 entity="robot",
             ),
             fields=("found", "force"),
@@ -429,7 +429,7 @@ def instinct_t2_parkour_amp_env_cfg(
                 mode="body",
                 pattern=".*",
                 entity="robot",
-                exclude=("FootLeft_Link", "FootRight_Link"),
+                exclude=("FootLeft_Link", "FootRight_Link", "AnkleCrossLeft_Link", "AnkleCrossRight_Link"),
             ),
             fields=("found", "force"),
             reduce="netforce",
