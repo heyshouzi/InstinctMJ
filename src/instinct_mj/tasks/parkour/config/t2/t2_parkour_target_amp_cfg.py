@@ -237,7 +237,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.025),
-                pos=(0.075, -0.026, -0.04),
+                pos=(0.075, -0.026, -0.015),
                 quat=(0.707105, 0.0, 0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -245,7 +245,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.025),
-                pos=(0.075, 0.026, -0.04),
+                pos=(0.075, 0.026, -0.015),
                 quat=(0.707105, 0.0, 0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -253,7 +253,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.091),
-                pos=(0.039, -0.01, -0.04),
+                pos=(0.039, -0.01, -0.015),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -261,7 +261,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.091),
-                pos=(0.039, 0.01, -0.04),
+                pos=(0.039, 0.01, -0.015),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -269,7 +269,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.093),
-                pos=(0.039, 0.0, -0.04),
+                pos=(0.039, 0.0, -0.015),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -277,7 +277,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.008, 0.0835),
-                pos=(0.0395, -0.018, -0.04),
+                pos=(0.0395, -0.018, -0.015),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -285,7 +285,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.008, 0.0835),
-                pos=(0.0395, 0.018, -0.04),
+                pos=(0.0395, 0.018, -0.015),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
