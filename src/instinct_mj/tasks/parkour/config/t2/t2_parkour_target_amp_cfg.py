@@ -223,21 +223,20 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
                 geom.contype = 0
                 geom.conaffinity = 0
 
-    # 仿照G1 ankle_roll的cage结构，用capsule笼子替代AnkleCross的mesh碰撞
-    # G1的left_ankle_roll有6个capsule围绕脚部，T2也采用相同的策略
+    # Foot bodies: 添加capsule cage作为脚部主要碰撞体
+    # 参考G1 ankle_roll的cage结构，capsule在Foot body上
     for body in spec.bodies:
-        if body.name in ("AnkleCrossLeft_Link", "AnkleCrossRight_Link"):
+        if body.name in ("FootLeft_Link", "FootRight_Link"):
             for geom in tuple(body.geoms):
                 if geom.group == 1:
                     continue  # skip visual
                 spec.delete(geom)
-            # 参考G1 left_ankle_roll的6-capsule cage:
-            # 4个外圈capsule (pos沿Y方向错开, quat使axis指向X方向)
-            # 2个内圈capsule (pos沿Y方向, quat使axis指向X方向)
+            # Foot相对位置z=-0.01（相对于AnkleCross），capsule放在脚底附近
+            # quat使capsule axis指向X方向，环绕脚部
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.025),
-                pos=(0.075, -0.026, -0.015),
+                pos=(0.075, -0.026, -0.005),
                 quat=(0.707105, 0.0, 0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -245,7 +244,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.025),
-                pos=(0.075, 0.026, -0.015),
+                pos=(0.075, 0.026, -0.005),
                 quat=(0.707105, 0.0, 0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -253,7 +252,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.091),
-                pos=(0.039, -0.01, -0.015),
+                pos=(0.039, -0.01, -0.005),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -261,7 +260,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.091),
-                pos=(0.039, 0.01, -0.015),
+                pos=(0.039, 0.01, -0.005),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -269,7 +268,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.01, 0.093),
-                pos=(0.039, 0.0, -0.015),
+                pos=(0.039, 0.0, -0.005),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -277,7 +276,7 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.008, 0.0835),
-                pos=(0.0395, -0.018, -0.015),
+                pos=(0.0395, -0.018, -0.005),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
@@ -285,20 +284,11 @@ def _parkour_t2_spec() -> mujoco.MjSpec:
             body.add_geom(
                 type=mujoco.mjtGeom.mjGEOM_CAPSULE,
                 size=(0.008, 0.0835),
-                pos=(0.0395, 0.018, -0.015),
+                pos=(0.0395, 0.018, -0.005),
                 quat=(0.707105, 0.0, -0.707108, 0.0),
                 contype=1,
                 conaffinity=1,
             )
-
-    # Foot bodies: G1的LL_FOOT/LR_FOOT是空body，T2的Foot也只有visual mesh
-    # 保持visual mesh但删除collision mesh，碰撞完全由AnkleCross cage处理
-    for body in spec.bodies:
-        if body.name in ("FootLeft_Link", "FootRight_Link"):
-            for geom in tuple(body.geoms):
-                if geom.group == 1:
-                    continue  # skip visual
-                spec.delete(geom)
 
     return spec
 
@@ -406,7 +396,7 @@ def instinct_t2_parkour_amp_env_cfg(
             name="contact_forces",
             primary=ContactMatch(
                 mode="body",
-                pattern=("AnkleCrossLeft_Link", "AnkleCrossRight_Link"),
+                pattern=("FootLeft_Link", "FootRight_Link"),
                 entity="robot",
             ),
             fields=("found", "force"),
@@ -429,7 +419,7 @@ def instinct_t2_parkour_amp_env_cfg(
                 mode="body",
                 pattern=".*",
                 entity="robot",
-                exclude=("FootLeft_Link", "FootRight_Link", "AnkleCrossLeft_Link", "AnkleCrossRight_Link"),
+                exclude=("FootLeft_Link", "FootRight_Link"),
             ),
             fields=("found", "force"),
             reduce="netforce",
@@ -501,7 +491,7 @@ def instinct_t2_parkour_amp_env_cfg(
             data_histories={"distance_to_image_plane_noised": 37},
             min_distance=0.1,
             max_distance=2.5,
-            debug_vis=True,
+            debug_vis=False,
         ),
     )
     motion_reference_sensor_cfg = copy.deepcopy(motion_reference_cfg)
