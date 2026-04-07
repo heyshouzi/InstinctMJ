@@ -1077,7 +1077,7 @@ requires-dist = [
     { name = "gymnasium", specifier = ">=0.29" },
     { name = "instinct-rl", git = "https://github.com/project-instinct/instinct_rl.git" },
     { name = "mediapy", specifier = ">=1.2.0" },
-    { name = "mjlab", directory = "/home/wulv/mjlab" },
+    { name = "mjlab", editable = "/home/wulv/mjlab" },
     { name = "numpy", specifier = ">=1.24" },
     { name = "numpy-quaternion" },
     { name = "onnxruntime", specifier = ">=1.16.0,<1.19.0" },
@@ -1703,7 +1703,7 @@ wheels = [
 [[package]]
 name = "mjlab"
 version = "1.2.0"
-source = { git = "https://github.com/mujocolab/mjlab.git#6abd0ebfde7ef07b3ecb6032c0efe3fda2794c5c" }
+source = { editable = "/home/wulv/mjlab" }
 dependencies = [
     { name = "imageio-ffmpeg" },
     { name = "mediapy" },
