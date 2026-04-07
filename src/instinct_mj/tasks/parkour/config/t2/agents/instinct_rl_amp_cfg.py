@@ -90,3 +90,18 @@ class T2ParkourPPORunnerCfg(InstinctRlOnPolicyRunnerCfg):
     empirical_normalization: bool = False
     policy: object = field(default_factory=lambda: MoEPolicyCfg())
     algorithm: object = field(default_factory=lambda: AmpAlgoCfg())
+
+
+@dataclass(kw_only=True)
+class T2_v3ParkourPPORunnerCfg(InstinctRlOnPolicyRunnerCfg):
+    num_steps_per_env: int = 24
+    policy_observation_group: str = "policy"
+    critic_observation_group: str = "critic"
+    max_iterations: int = 30000
+    save_interval: int = 1000
+    experiment_name: str = "t2_v3_parkour"
+    resume: bool = False
+    load_run: str = "^(?!_play$).*"
+    empirical_normalization: bool = False
+    policy: object = field(default_factory=lambda: MoEPolicyCfg())
+    algorithm: object = field(default_factory=lambda: AmpAlgoCfg())
