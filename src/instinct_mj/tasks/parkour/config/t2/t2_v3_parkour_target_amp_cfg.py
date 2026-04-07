@@ -72,7 +72,7 @@ from instinct_mj.utils.noise import CropAndResizeCfg, DepthNormalizationCfg, Gau
 __file_dir__ = os.path.dirname(os.path.realpath(__file__))
 # NOTE: Change this to your local T2 parkour dataset root before training / play.
 # TODO: Update this path once T2 motion reference data is available.
-_PARKOUR_DATASET_DIR = os.path.expanduser("/Workspace/wulv/motion/t2_retargeted_npz")
+_PARKOUR_DATASET_DIR = os.path.expanduser("/Workspace/wulv/motion/t2_v3_retargeted_npz")
 
 
 # ---------------------------------------------------------------------------
@@ -170,20 +170,20 @@ motion_reference_cfg = MotionReferenceManagerCfg(
         "right_ankle_pitch_link",
         "right_ankle_roll_link",
     ],
-    # T2 v3 symmetric augmentation: 33 links (body indices 1-33, but mapping uses 0-based)
-    # Left arm: 4-10, Right arm: 11-17, Waist: 18-20
-    # Left leg: 21-26, Right leg: 27-32
+    # T2 v3 symmetric augmentation: 32 links (indices 0-31 into link_of_interests)
+    # Left arm: 3-9, Right arm: 10-16, Waist: 17-19
+    # Left leg: 20-25, Right leg: 26-31
     symmetric_augmentation_link_mapping=[
         0,  # trunk
         1,  # head_yaw_link
         2,  # head_pitch_link
-        11,  # left_shoulder_pitch_link <-> right_shoulder_pitch_link
-        12,  # left_shoulder_roll_link <-> right_shoulder_roll_link
-        13,  # left_elbow_pitch_link <-> right_elbow_pitch_link
-        14,  # left_elbow_yaw_link <-> right_elbow_yaw_link
-        15,  # left_wrist_pitch_link <-> right_wrist_pitch_link
-        16,  # left_wrist_yaw_link <-> right_wrist_yaw_link
-        17,  # left_wrist_roll_link <-> right_wrist_roll_link
+        10,  # left_shoulder_pitch_link <-> right_shoulder_pitch_link
+        11,  # left_shoulder_roll_link <-> right_shoulder_roll_link
+        12,  # left_elbow_pitch_link <-> right_elbow_pitch_link
+        13,  # left_elbow_yaw_link <-> right_elbow_yaw_link
+        14,  # left_wrist_pitch_link <-> right_wrist_pitch_link
+        15,  # left_wrist_yaw_link <-> right_wrist_yaw_link
+        16,  # left_wrist_roll_link <-> right_wrist_roll_link
         3,  # right_shoulder_pitch_link <-> left_shoulder_pitch_link
         4,  # right_shoulder_roll_link <-> left_shoulder_roll_link
         5,  # right_elbow_pitch_link <-> left_elbow_pitch_link
@@ -191,21 +191,21 @@ motion_reference_cfg = MotionReferenceManagerCfg(
         7,  # right_wrist_pitch_link <-> left_wrist_pitch_link
         8,  # right_wrist_yaw_link <-> left_wrist_yaw_link
         9,  # right_wrist_roll_link <-> left_wrist_roll_link
-        18,  # waist_pitch_link
-        19,  # waist_roll_link
-        20,  # waist_yaw_link
-        27,  # left_hip_pitch_link <-> right_hip_pitch_link
-        28,  # left_hip_roll_link <-> right_hip_roll_link
-        29,  # left_hip_yaw_link <-> right_hip_yaw_link
-        30,  # left_knee_pitch_link <-> right_knee_pitch_link
-        31,  # left_ankle_pitch_link <-> right_ankle_pitch_link
-        32,  # left_ankle_roll_link <-> right_ankle_roll_link
-        21,  # right_hip_pitch_link <-> left_hip_pitch_link
-        22,  # right_hip_roll_link <-> left_hip_roll_link
-        23,  # right_hip_yaw_link <-> left_hip_yaw_link
-        24,  # right_knee_pitch_link <-> left_knee_pitch_link
-        25,  # right_ankle_pitch_link <-> left_ankle_pitch_link
-        26,  # right_ankle_roll_link <-> left_ankle_roll_link
+        17,  # waist_pitch_link
+        18,  # waist_roll_link
+        19,  # waist_yaw_link
+        26,  # left_hip_pitch_link <-> right_hip_pitch_link
+        27,  # left_hip_roll_link <-> right_hip_roll_link
+        28,  # left_hip_yaw_link <-> right_hip_yaw_link
+        29,  # left_knee_pitch_link <-> right_knee_pitch_link
+        30,  # left_ankle_pitch_link <-> right_ankle_pitch_link
+        31,  # left_ankle_roll_link <-> right_ankle_roll_link
+        20,  # right_hip_pitch_link <-> left_hip_pitch_link
+        21,  # right_hip_roll_link <-> left_hip_roll_link
+        22,  # right_hip_yaw_link <-> left_hip_yaw_link
+        23,  # right_knee_pitch_link <-> left_knee_pitch_link
+        24,  # right_ankle_pitch_link <-> left_ankle_pitch_link
+        25,  # right_ankle_roll_link <-> left_ankle_roll_link
     ],
     symmetric_augmentation_joint_mapping=list(T2_v3_symmetric_augmentation_joint_mapping),
     symmetric_augmentation_joint_reverse_buf=list(T2_v3_symmetric_augmentation_joint_reverse_buf),
@@ -232,6 +232,12 @@ def _parkour_t2_v3_spec() -> mujoco.MjSpec:
     for body in spec.bodies:
         for light in tuple(body.lights):
             spec.delete(light)
+
+    # T2 v3 XML already has actuators defined, but they have default parameters
+    # (no stiffness/damping/effort_limit). We need to delete them so our
+    # EntityArticulationInfoCfg can add actuators with proper motor parameters.
+    for actuator in tuple(spec.actuators):
+        spec.delete(actuator)
 
     # Disable collision on upper body bodies — they cause heightfield overflow
     # when long chain geometry collides with terrain (>=50 collision points).
@@ -342,7 +348,7 @@ def instinct_t2_v3_parkour_amp_env_cfg(
         decimation=4,
         episode_length_s=10.0,
         sim=SimulationCfg(
-            nconmax=256,
+            nconmax=128,
             njmax=700,
             mujoco=MujocoCfg(
                 timestep=0.005,
@@ -482,7 +488,7 @@ def instinct_t2_v3_parkour_amp_env_cfg(
     cfg.commands = {
         "base_velocity": PoseVelocityCommandCfg(
             entity_name="robot",
-            resampling_time_range=(4.0, 6.0),
+            resampling_time_range=(8.0, 10.0),
             debug_vis=False,
             velocity_control_stiffness=2.0,
             heading_control_stiffness=2.0,
