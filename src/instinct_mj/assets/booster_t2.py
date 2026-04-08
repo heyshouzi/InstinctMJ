@@ -570,7 +570,7 @@ def get_t2_v3_spec() -> mujoco.MjSpec:
 # Initial state for T2 v3 robot (root: trunk)
 # ============================================================================
 _T2_v3_INIT_STATE = EntityCfg.InitialStateCfg(
-    pos=(0.0, 0.0, 0.953),
+    pos=(0.0, 0.0, 1.1),
     joint_pos={
         # Head
         "aa_head_yaw_joint": 0.0,
