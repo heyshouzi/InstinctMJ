@@ -303,7 +303,7 @@ def instinct_t2_v3_parkour_amp_env_cfg(
     # Robot entity - create before scene so we can pass it to SceneCfg
     robot_cfg = copy.deepcopy(T2_v3_31DOF_CFG)
     robot_cfg.spec_fn = _parkour_t2_v3_spec
-    robot_cfg.init_state.pos = (0.0, 0.0, 0.953)
+    robot_cfg.init_state.pos = (0.0, 0.0, 1.1)
 
     # Terrain
     terrain_gen = copy.deepcopy(ROUGH_TERRAINS_CFG_PLAY if play else ROUGH_TERRAINS_CFG)
@@ -384,7 +384,7 @@ def instinct_t2_v3_parkour_amp_env_cfg(
                 entity="robot",
             ),
             fields=("found", "force"),
-            reduce="maxforce",
+            reduce="netforce",
             track_air_time=True,
             history_length=3,
         ),
@@ -757,12 +757,12 @@ def instinct_t2_v3_parkour_amp_env_cfg(
         # ---------- Task rewards ----------
         "track_lin_vel_xy_exp": RewardTermCfg(
             func=parkour_mdp.track_lin_vel_xy_exp,
-            weight=3.0,
+            weight=2.0,
             params={"command_name": "base_velocity", "std": 0.5},
         ),
         "track_ang_vel_z_exp": RewardTermCfg(
             func=parkour_mdp.track_ang_vel_z_exp,
-            weight=1.5,
+            weight=2.0,
             params={"command_name": "base_velocity", "std": 0.5},
         ),
         "heading_error": RewardTermCfg(
