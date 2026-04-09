@@ -1,4 +1,4 @@
-"""T2 v3 parkour AMP task config factories.
+"""T2 v3.2 parkour AMP task config factories.
 
 Config is built via factory functions that return a fully-built
 ``ManagerBasedRlEnvCfg``.
@@ -38,7 +38,7 @@ from mjlab.viewer.viewer_config import ViewerConfig
 
 import instinct_mj.envs.mdp as instinct_envs_mdp
 import instinct_mj.tasks.parkour.mdp as parkour_mdp
-from instinct_mj.assets.booster_t2 import (
+from instinct_mj.assets.booster_t2_v3_2 import (
     T2_v3_31DOF_CFG,
     T2_v3_MJCF_PATH,
     T2_v3_ACTION_SCALE,
@@ -82,7 +82,7 @@ _PARKOUR_DATASET_DIR = os.path.expanduser("/Workspace/wulv/motion/t2_v3_retarget
 
 @dataclass(kw_only=True)
 class AmassMotionCfg(AmassMotionCfgBase):
-    """Parkour AMASS motion buffer config for T2 v3."""
+    """Parkour AMASS motion buffer config for T2 v3.2."""
 
     path: str = _PARKOUR_DATASET_DIR
     retargetting_func: object | None = None
@@ -217,8 +217,8 @@ motion_reference_cfg = MotionReferenceManagerCfg(
 )
 
 
-def _parkour_t2_v3_spec() -> mujoco.MjSpec:
-    """Build MjSpec for the T2 v3 robot."""
+def _parkour_t2_v3_2_spec() -> mujoco.MjSpec:
+    """Build MjSpec for the T2 v3.2 robot."""
     spec = mujoco.MjSpec.from_file(
         os.path.abspath(T2_v3_MJCF_PATH)
     )
@@ -287,11 +287,11 @@ def _parkour_t2_v3_spec() -> mujoco.MjSpec:
 # ---------------------------------------------------------------------------
 
 
-def instinct_t2_v3_parkour_amp_env_cfg(
+def instinct_t2_v3_2_parkour_amp_env_cfg(
     *,
     play: bool = False,
 ) -> ManagerBasedRlEnvCfg:
-    """Build the T2 v3 parkour AMP environment configuration.
+    """Build the T2 v3.2 parkour AMP environment configuration.
 
     Args:
       play: If True, apply play-mode overrides (fewer envs, relaxed
@@ -302,7 +302,7 @@ def instinct_t2_v3_parkour_amp_env_cfg(
     """
     # Robot entity - create before scene so we can pass it to SceneCfg
     robot_cfg = copy.deepcopy(T2_v3_31DOF_CFG)
-    robot_cfg.spec_fn = _parkour_t2_v3_spec
+    robot_cfg.spec_fn = _parkour_t2_v3_2_spec
     robot_cfg.init_state.pos = (0.0, 0.0, 1.1)
 
     # Terrain
@@ -1052,11 +1052,11 @@ def instinct_t2_v3_parkour_amp_env_cfg(
 # ---------------------------------------------------------------------------
 
 
-def instinct_t2_v3_parkour_amp_final_cfg(
+def instinct_t2_v3_2_parkour_amp_final_cfg(
     *,
     play: bool = False,
 ) -> ManagerBasedRlEnvCfg:
-    """Create the final T2 v3 parkour AMP env configuration.
+    """Create the final T2 v3.2 parkour AMP env configuration.
 
     Args:
       play: If True, apply play-mode overrides (fewer envs, relaxed
@@ -1065,7 +1065,7 @@ def instinct_t2_v3_parkour_amp_final_cfg(
     Returns:
       A fully-built ``ManagerBasedRlEnvCfg`` instance.
     """
-    cfg = instinct_t2_v3_parkour_amp_env_cfg(play=play)
+    cfg = instinct_t2_v3_2_parkour_amp_env_cfg(play=play)
 
     if play:
         cfg.viewer = ViewerConfig(
