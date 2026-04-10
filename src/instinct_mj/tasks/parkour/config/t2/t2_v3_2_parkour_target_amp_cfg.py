@@ -445,7 +445,7 @@ def instinct_t2_v3_2_parkour_amp_env_cfg(
         ),
         NoisyGroupedRayCasterCameraCfg(
             name="camera",
-            frame=ObjRef(type="body", name="waist_yaw_link", entity="robot"),
+            frame=ObjRef(type="body", name="waist_roll_link", entity="robot"),
             pattern=PinholeCameraPatternCfg(
                 width=64,
                 height=36,
@@ -456,9 +456,8 @@ def instinct_t2_v3_2_parkour_amp_env_cfg(
             vertical_aperture=2 * 0.509,
             ray_alignment="yaw",
             offset=NoisyGroupedRayCasterCameraCfg.OffsetCfg(
-                # T2 v3 camera at waist yaw, 0.1m forward (x direction), 48deg downward tilt
-                pos=(0.1, 0.0, 0.0),
-                rot=(0.9135367613482678, 0.004363309284746571, 0.4067366430758002, 0.0),
+                pos=(0.12, 0.0, 0.047),
+                rot = (0.965925826, 0.0, -0.258819045, 0.0),
                 convention="world",
             ),
             data_types=["distance_to_image_plane"],
