@@ -456,8 +456,8 @@ def instinct_t2_v3_2_parkour_amp_env_cfg(
             vertical_aperture=2 * 0.509,
             ray_alignment="yaw",
             offset=NoisyGroupedRayCasterCameraCfg.OffsetCfg(
-                pos=(0.12, 0.0, 0.047),
-                rot = (0.965925826, 0.0, -0.258819045, 0.0),
+                pos=(0.15, 0.0, 0.047),
+                rot = (0.965925826, 0.0, 0.258819045, 0.0),
                 convention="world",
             ),
             data_types=["distance_to_image_plane"],
@@ -474,7 +474,7 @@ def instinct_t2_v3_2_parkour_amp_env_cfg(
             data_histories={"distance_to_image_plane_noised": 37},
             min_distance=0.1,
             max_distance=2.5,
-            debug_vis=True,
+            debug_vis=False,
         ),
     )
     motion_reference_sensor_cfg = copy.deepcopy(motion_reference_cfg)
