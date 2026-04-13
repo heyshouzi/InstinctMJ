@@ -71,8 +71,10 @@ from instinct_mj.utils.noise import CropAndResizeCfg, DepthNormalizationCfg, Gau
 
 __file_dir__ = os.path.dirname(os.path.realpath(__file__))
 # NOTE: Change this to your local T2 parkour dataset root before training / play.
-# TODO: Update this path once T2 motion reference data is available.
-_PARKOUR_DATASET_DIR = os.path.expanduser("/Workspace/wulv/motion/t2_v3_retargeted_npz")
+_PARKOUR_DATASET_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file_dir__)))))),
+    "t2_v3_retargeted_npz"
+)
 
 
 # ---------------------------------------------------------------------------
